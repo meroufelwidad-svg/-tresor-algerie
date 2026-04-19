@@ -25,7 +25,6 @@ select { width: 250px; padding: 8px 12px; font-size: 14px; border-radius: 8px; b
 <body>
 
 <select onchange="filtrer(this.value)">
- 
   <option value="tous">🛍️ Toutes les catégories</option>
   <option value="tapis">🟤 Tapis & Tissage</option>
   <option value="poterie">🏺 Poterie & Céramique</option>
@@ -77,7 +76,7 @@ let currentList = [];
 
 function filtrer(cat) {
   const div = document.getElementById("liste");
-  if (!cat) { div.innerHTML = ""; currentList = []; return; }
+  if (!cat) cat = "tous";
   currentList = cat === "tous" ? Object.values(produits).flat() : produits[cat];
   div.innerHTML = currentList.map((p, i) => `
     <div class="produit" onclick="ouvrir(${i})">
@@ -107,6 +106,8 @@ function ouvrir(i) {
 function fermer() {
   document.getElementById("modal").style.display = "none";
 }
+
+filtrer("tous");
 </script>
 </body>
 </html>
