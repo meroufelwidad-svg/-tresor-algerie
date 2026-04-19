@@ -1,0 +1,152 @@
+<select onchange="filtrer(this.value)">
+  <option value="">-- Choisissez une catégorie --</option>
+  <option value="tous">🛍️ Toutes les catégories</option>
+  <option value="tapis">🟤 Tapis & Tissage</option>
+  <option value="poterie">🏺 Poterie & Céramique</option>
+  <option value="bijoux">💍 Bijoux & Accessoires</option>
+  <option value="cuir">👜 Maroquinerie & Cuir</option>
+  <option value="deco">🕯️ Décoration & Maison</option>
+  <option value="naturel">🌿 Produits Naturels</option>
+</select>
+<div id="liste"></div>
+<div id="modal" style="display:none">
+  <div id="modal-contenu"></div>
+</div>
+body { font-family: Arial, sans-serif; padding: 15px; background: #fff; }
+select {
+  width: 250px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 2px solid #C8960C;
+  color: #5C3317;
+  background: #FFF8F0;
+  margin-bottom: 20px;
+}
+#liste {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.produit {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #FFF8F0;
+  width: 155px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.produit:hover { border-color: #C8960C; transform: scale(1.03); }
+.produit img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+.info { padding: 8px; }
+.nom { font-weight: bold; color: #5C3317; font-size: 12px; }
+.prix { color: #C8960C; font-weight: bold; font-size: 12px; margin-top: 4px; }
+#modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+#modal-contenu {
+  background: #FFF8F0;
+  border-radius: 14px;
+  padding: 20px;
+  max-width: 340px;
+  width: 90%;
+  position: relative;
+}
+#modal-contenu img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.m-nom { font-size: 17px; font-weight: bold; color: #5C3317; margin-bottom: 6px; }
+.m-info { font-size: 13px; color: #666; margin: 4px 0; }
+.m-desc { font-size: 13px; color: #444; margin: 8px 0; line-height: 1.5; }
+.m-prix { font-size: 17px; color: #C8960C; font-weight: bold; margin-top: 10px; }
+.fermer {
+  position: absolute;
+  top: 10px; right: 14px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #5C3317;
+  font-weight: bold;
+}
+const produits = {
+  tapis: [
+    { nom: "Tapis Berbère de l'Aurès", region: "Aurès", matiere: "Laine naturelle tissée à la main", desc: "Magnifique tapis traditionnel aux motifs géométriques berbères, tons crème et gris. Chaque pièce est unique, fabriquée par des artisanes locales.", prix: "4 500 DA", photo: "https://i.postimg.cc/1XdhH0Sj/photo-2026-04-19-20-53-32.jpg" },
+    { nom: "Tapis Blanc Kabyle", region: "Kabylie", matiere: "Laine blanche naturelle", desc: "Tapis blanc moelleux orné de motifs amazighs noirs et terracotta. Symboles traditionnels tissés à la main, pièce rare et authentique.", prix: "5 800 DA", photo: "https://i.postimg.cc/442gsGc4/photo-2026-04-19-20-53-54.jpg" },
+    { nom: "Burnous Traditionnel", region: "Batna", matiere: "Laine de mouton pure", desc: "Cape traditionnelle algérienne en laine naturelle, avec capuche et bordures noires. Portée lors des cérémonies et fêtes traditionnelles.", prix: "6 200 DA", photo: "https://i.postimg.cc/SQ1hk49k/photo-2026-04-19-20-53-58.jpg" },
+  ],
+  poterie: [
+    { nom: "Jarre Berbère Ancienne", region: "Kabylie", matiere: "Argile naturelle peinte", desc: "Jarre traditionnelle à bec verseur, décorée de motifs géométriques berbères en rouge et ocre. Pièce de musée, artisanat rare.", prix: "3 200 DA", photo: "https://i.postimg.cc/VsZ8mwtf/photo-2026-04-19-20-54-07.jpg" },
+    { nom: "Khabia avec Bol", region: "Tizi Ouzou", matiere: "Terre cuite peinte", desc: "Ensemble traditionnel khabia avec son bol assorti. Décorée de losanges et étoiles colorés. Utilisée pour conserver l'eau fraîche.", prix: "1 800 DA", photo: "https://i.postimg.cc/59KVbJz2/photo-2026-04-19-20-54-11.jpg" },
+    { nom: "Vase en Céramique", region: "Béjaïa", matiere: "Céramique émaillée", desc: "Vase élégant en céramique émaillée, motifs floraux et géométriques peints à la main. Idéal pour la décoration intérieure.", prix: "1 400 DA", photo: "https://i.postimg.cc/pVcHRvjy/photo-2026-04-19-20-54-15.jpg" },
+    { nom: "Assiettes Amazighes", region: "Kabylie", matiere: "Céramique blanche peinte", desc: "Set d'assiettes décorées de tifinagh et symboles amazighs gravés. Mélange parfait de tradition et modernité.", prix: "2 200 DA", photo: "https://i.postimg.cc/ncstLWK1/photo-2026-04-19-20-54-20.jpg" },
+  ],
+  bijoux: [
+    { nom: "Bracelet Kabyle en Argent", region: "Kabylie", matiere: "Argent et émail coloré", desc: "Splendide bracelet kabyle en argent massif serti de corail, émail bleu, vert et jaune. Bijou traditionnel porté lors des mariages et fêtes.", prix: "8 500 DA", photo: "https://i.postimg.cc/tC1Hgcdr/photo-2026-04-19-20-54-28.jpg" },
+    { nom: "Collier en Corail", region: "Kabylie", matiere: "Corail naturel et argent", desc: "Magnifique collier en branches de corail naturel avec pendentif en argent serti de corail. Bijou traditionnel algérien très recherché.", prix: "6 800 DA", photo: "https://i.postimg.cc/WbDP4ym0/photo-2026-04-19-20-54-33.jpg" },
+    { nom: "Bague Kabyle Émaillée", region: "Tizi Ouzou", matiere: "Argent et émail multicolore", desc: "Bague traditionnelle kabyle en argent avec émail bleu, vert et jaune, pierre de corail au centre. Travail artisanal fin et délicat.", prix: "3 200 DA", photo: "https://i.postimg.cc/BQ8Gvz5Y/photo-2026-04-19-20-54-36.jpg" },
+    { nom: "Fibule Amazighe", region: "Grande Kabylie", matiere: "Argent et émail", desc: "Fibule traditionnelle amazighe en argent émaillé, ornée de corail rouge. Accessoire vestimentaire traditionnel porté pour fermer le burnous.", prix: "5 500 DA", photo: "https://i.postimg.cc/xTkSdZyD/photo-2026-04-19-20-54-41.jpg" },
+  ],
+  cuir: [
+    { nom: "Sac en Cuir Gravé", region: "Tlemcen", matiere: "Cuir naturel tanné", desc: "Sac bandoulière en cuir naturel camel, gravé à la main de motifs floraux et géométriques. Cousu main, très résistant et élégant.", prix: "3 500 DA", photo: "https://i.postimg.cc/5NZWQmnC/photo-2026-04-19-20-54-50.jpg" },
+    { nom: "Babouches Brodées", region: "Tlemcen", matiere: "Cuir rouge brodé", desc: "Babouches traditionnelles en cuir rouge, brodées à la main de motifs multicolores. Confortables et colorées, idéales pour les fêtes.", prix: "2 800 DA", photo: "https://i.postimg.cc/YCYK6msD/photo-2026-04-19-20-54-54.jpg" },
+    { nom: "Portefeuille en Cuir", region: "Constantine", matiere: "Cuir naturel cousu main", desc: "Portefeuille en cuir naturel brun, cousu main avec des fils colorés rouge, noir et doré. Spacieux et très solide.", prix: "1 600 DA", photo: "https://i.postimg.cc/VknQqbVv/photo-2026-04-19-20-54-57.jpg" },
+  ],
+  deco: [
+    { nom: "Service en Laiton Gravé", region: "Constantine", matiere: "Laiton gravé à la main", desc: "Magnifique service en laiton comprenant plateau, théière et accessoires. Gravure florale et arabesque fine, travail artisanal exceptionnel.", prix: "12 000 DA", photo: "https://i.postimg.cc/pLzbfn6n/photo-2026-04-19-20-55-02.jpg" },
+  ],
+  naturel: [
+    { nom: "Huile d'Olive de Kabylie", region: "Kabylie", matiere: "Huile d'olive 100% naturelle", desc: "Huile d'olive extra vierge pressée à froid, produite par des familles d'agriculteurs kabyles. Goût fruité et intense, idéale pour la cuisine et la santé. Bouteille de 500ml.", prix: "950 DA", photo: "https://i.postimg.cc/Z5kX555v/photo-2026-04-19-20-55-07.jpg" },
+    { nom: "Huile de Nigelle", region: "Algérie", matiere: "100% naturelle pressée à froid", desc: "Huile de nigelle pure pressée à froid. Reconnue pour ses vertus médicinales exceptionnelles. Flacon de 250ml.", prix: "1 200 DA", photo: "https://i.postimg.cc/7ZvjZZZS/photo-2026-04-19-20-55-11.jpg" },
+    { nom: "Eau de Rose Naturelle", region: "Algérie", matiere: "Eau florale distillée bio", desc: "Eau de rose florale 100% naturelle et biologique, distillée artisanalement. Idéale pour le soin de la peau et la cuisine traditionnelle. 200ml.", prix: "800 DA", photo: "https://i.postimg.cc/nhvgjfXj/photo-2026-04-19-20-55-15.jpg" },
+  ],
+};
+
+let currentList = [];
+
+function filtrer(cat) {
+  const div = document.getElementById("liste");
+  if (!cat) { div.innerHTML = ""; currentList = []; return; }
+  currentList = cat === "tous" ? Object.values(produits).flat() : produits[cat];
+  div.innerHTML = currentList.map((p, i) => `
+    <div class="produit" onclick="ouvrir(${i})">
+      <img src="${p.photo}" alt="${p.nom}">
+      <div class="info">
+        <div class="nom">${p.nom}</div>
+        <div class="prix">${p.prix}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function ouvrir(i) {
+  const p = currentList[i];
+  document.getElementById("modal-contenu").innerHTML = `
+    <span class="fermer" onclick="fermer()">✕</span>
+    <img src="${p.photo}" alt="${p.nom}">
+    <div class="m-nom">${p.nom}</div>
+    <div class="m-info">📍 Région : ${p.region}</div>
+    <div class="m-info">🧵 Matière : ${p.matiere}</div>
+    <div class="m-desc">${p.desc}</div>
+    <div class="m-prix">💰 ${p.prix}</div>
+  `;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function fermer() {
+  document.getElementById("modal").style.display = "none";
+}
