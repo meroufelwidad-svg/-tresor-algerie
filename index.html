@@ -12,8 +12,6 @@ select { width: 250px; padding: 8px 12px; font-size: 14px; border-radius: 8px; b
 .info { padding: 8px; }
 .nom { font-weight: bold; color: #5C3317; font-size: 12px; }
 .prix { color: #C8960C; font-weight: bold; font-size: 12px; margin-top: 4px; }
-.btn-acheter { display: block; width: 100%; padding: 6px 0; margin-top: 6px; background: #C8960C; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; text-align: center; }
-.btn-acheter:hover { background: #5C3317; }
 #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 999; }
 #modal-contenu { background: #FFF8F0; border-radius: 14px; padding: 20px; max-width: 340px; width: 90%; position: relative; }
 #modal-contenu img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
@@ -21,7 +19,7 @@ select { width: 250px; padding: 8px 12px; font-size: 14px; border-radius: 8px; b
 .m-info { font-size: 13px; color: #666; margin: 4px 0; }
 .m-desc { font-size: 13px; color: #444; margin: 8px 0; line-height: 1.5; }
 .m-prix { font-size: 17px; color: #C8960C; font-weight: bold; margin-top: 10px; }
-.m-btn { display: block; width: 100%; padding: 10px 0; margin-top: 14px; background: #C8960C; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-align: center; }
+.m-btn { display: block; width: 100%; padding: 10px 0; margin-top: 14px; background: #C8960C; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-align: center; text-decoration: none; }
 .m-btn:hover { background: #5C3317; }
 .fermer { position: absolute; top: 10px; right: 14px; font-size: 22px; cursor: pointer; color: #5C3317; font-weight: bold; }
 </style>
@@ -90,7 +88,6 @@ function filtrer(cat) {
       <div class="info">
         <div class="nom">${p.nom}</div>
         <div class="prix">${p.prix}</div>
-        <button class="btn-acheter" onclick="event.stopPropagation(); acheter('${p.nom}')">🛒 Acheter</button>
       </div>
     </div>
   `).join("");
@@ -106,13 +103,9 @@ function ouvrir(i) {
     <div class="m-info">🧵 Matière : ${p.matiere}</div>
     <div class="m-desc">${p.desc}</div>
     <div class="m-prix">💰 ${p.prix}</div>
-    <button class="m-btn" onclick="acheter('${p.nom}')">🛒 Commander ce produit</button>
+    <a class="m-btn" href="${formURL}" target="_blank">🛒 Commander ce produit</a>
   `;
   document.getElementById("modal").style.display = "flex";
-}
-
-function acheter(nom) {
-  window.open(formURL, "_blank");
 }
 
 function fermer() {
